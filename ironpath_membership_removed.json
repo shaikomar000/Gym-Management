@@ -1,0 +1,27 @@
+{
+  "project": "IronPath",
+  "change": "Membership system removed",
+  "features": {
+    "membership_plans": false,
+    "membership_payments": false,
+    "membership_renewals": false,
+    "account_registration": true,
+    "login_required_for_private_member_features": true,
+    "workout_access_requires_paid_membership": false,
+    "reviews_readable_by_visitors": true,
+    "reviews_postable_by_logged_in_accounts": true
+  },
+  "changed_files": [
+    "main.py",
+    "static/js/app.js",
+    "templates/admin.html",
+    "templates/membership.html (removed)",
+    "README.txt",
+    "README_IRONPATH_REVIEWS.txt"
+  ],
+  "compatibility": {
+    "legacy_route": "/membership",
+    "behavior": "redirects to /signup"
+  },
+  "database": "No database migration required for removing the membership system."
+}

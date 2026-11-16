@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block title %}Admin Dashboard | IronPath{% endblock %}
+{% block page %}admin{% endblock %}
+{% block body %}
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <a class="admin-brand" href="/"><i class="bi bi-activity"></i><span>Iron<span class="text-green">Path</span></span></a>
+    <div class="admin-side-label">MANAGEMENT</div>
+    <nav class="admin-side-nav" aria-label="Admin sections">
+      <button class="active" data-admin-view="dashboard"><i class="bi bi-grid-1x2-fill"></i>Dashboard</button>
+      <button data-admin-view="members"><i class="bi bi-people-fill"></i>Members</button>
+      <button data-admin-view="coaches"><i class="bi bi-person-workspace"></i>Coaches</button>
+      <button data-admin-view="attendance"><i class="bi bi-calendar2-check"></i>Attendance</button>
+      <button data-admin-view="reports"><i class="bi bi-bar-chart-line-fill"></i>Reports</button>
+      <button data-admin-view="settings"><i class="bi bi-gear-fill"></i>Settings</button>
+    </nav>
+    <div class="admin-sidebar-bottom"><div class="admin-sidebar-mark"><i class="bi bi-lightning-charge-fill"></i></div><strong>Stronger Together</strong><small>Train · Track · Transform</small></div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar"><div><div class="admin-kicker">IRONPATH / MANAGEMENT</div><h1 id="adminCurrentTitle">Dashboard</h1></div><div class="admin-user"><span class="admin-user-icon"><i class="bi bi-shield-lock-fill"></i></span><span><strong>Administrator</strong><small>Gym management</small></span></div></header>
+    <div id="adminActionNotice" class="admin-notice" role="status">Demo dashboard — sample information only. Actions do not send real notifications.</div>
+
+    <!-- DASHBOARD -->
+    <section data-admin-panel="dashboard" class="admin-view">
+      <div class="admin-welcome"><div><h2>Welcome back, Admin!</h2><p>Here's an overview of your gym's activity.</p></div><span class="admin-date"><i class="bi bi-calendar3 me-2"></i>Management overview</span></div>
+      <div class="row g-3 admin-stats">
+        <div class="col-6 col-xl-3"><article class="admin-panel admin-stat"><div><small>Total members</small><strong id="statMembers">4</strong><span>Registered members</span></div><i class="bi bi-people-fill"></i></article></div>
+        
+        <div class="col-6 col-xl-3"><article class="admin-panel admin-stat"><div><small>Total coaches</small><strong id="statCoaches">3</strong><span>Registered coaches</span></div><i class="bi bi-person-workspace"></i></article></div>
+        <div class="col-6 col-xl-3"><article class="admin-panel admin-stat"><div><small>Pending attendance</small><strong id="statPendingAttendance">4</strong><span>Awaiting approval</span></div><i class="bi bi-calendar2-check"></i></article></div>
+      </div>
+      <div class="row g-3 mt-1"><div class="col-xl-7"><article class="admin-panel h-100"><div class="admin-panel-heading"><div><h3>Quick actions</h3><p>Jump to the area you want to manage.</p></div></div><div class="admin-quick-grid"><button data-admin-view="members"><i class="bi bi-people"></i><span>Manage members</span></button><button data-admin-view="attendance"><i class="bi bi-check2-square"></i><span>Review attendance</span></button><button data-admin-view="reports"><i class="bi bi-graph-up"></i><span>View reports</span></button></div></article></div><div class="col-xl-5"><article class="admin-panel h-100"><div class="admin-panel-heading"><div><h3>Member access</h3><p>Registered accounts can use member features after logging in.</p></div></div><p class="admin-muted mb-0">No plans, renewals or membership payments are managed on this site.</p></article></div></div>
+    </section>
+
+    <!-- MEMBERS -->
+    <section data-admin-panel="members" class="admin-view" hidden>
+      <div class="admin-panel-heading admin-page-heading"><div><h2>Members</h2><p>Registered member details and attendance approval.</p></div><input class="form-control admin-search" type="search" placeholder="Search members..." data-admin-search="adminMembersTable"></div>
+      <div class="admin-panel p-0"><div class="admin-table-wrap"><table class="table admin-table align-middle" id="adminMembersTable"><thead><tr><th>Member</th><th>ID</th><th>Attendance</th><th>Action</th></tr></thead><tbody>
+        <tr data-status="pending"><td><strong>Arjun Reddy</strong></td><td>IPM-001</td><td><span class="status-pill status-pending admin-attendance-status">Pending</span></td><td><button class="admin-action approve admin-approve" >Send approval</button></td></tr>
+        <tr data-status="approved"><td><strong>Sarah Khan</strong></td><td>IPM-002</td><td><span class="status-pill status-approved admin-attendance-status">Approved</span></td><td><button class="admin-action " disabled>Approved</button></td></tr>
+        <tr data-status="pending"><td><strong>Vikram Mehta</strong></td><td>IPM-003</td><td><span class="status-pill status-pending admin-attendance-status">Pending</span></td><td><button class="admin-action approve admin-approve" >Send approval</button></td></tr>
+        <tr data-status="pending"><td><strong>Noor Fatima</strong></td><td>IPM-004</td><td><span class="status-pill status-pending admin-attendance-status">Pending</span></td><td><button class="admin-action approve admin-approve" >Send approval</button></td></tr>
+      </tbody></table></div></div>
+    </section>
+
+    <!-- COACHES -->
+    <section data-admin-panel="coaches" class="admin-view" hidden>
+      <div class="admin-panel-heading admin-page-heading"><div><h2>Coaches</h2><p>Coach profiles, specialization, monthly salary and attendance approval.</p></div><input class="form-control admin-search" type="search" placeholder="Search coaches..." data-admin-search="adminCoachesTable"></div>
+      <div class="admin-panel p-0"><div class="admin-table-wrap"><table class="table admin-table align-middle" id="adminCoachesTable"><thead><tr><th>Coach</th><th>ID</th><th>Specialization</th><th>Monthly salary</th><th>Attendance</th><th>Action</th></tr></thead><tbody>
+        <tr data-status="pending"><td><strong>Rahul Kumar</strong></td><td>IPC-001</td><td>Strength training</td><td>₹28,000</td><td><span class="status-pill status-pending admin-attendance-status">Pending</span></td><td><button class="admin-action approve admin-approve">Send approval</button></td></tr>
+        <tr data-status="approved"><td><strong>Ahmed Malik</strong></td><td>IPC-002</td><td>Weight loss</td><td>₹25,000</td><td><span class="status-pill status-approved admin-attendance-status">Approved</span></td><td><button class="admin-action" disabled>Approved</button></td></tr>
+        <tr data-status="pending"><td><strong>Priya Sharma</strong></td><td>IPC-003</td><td>Yoga & mobility</td><td>₹30,000</td><td><span class="status-pill status-pending admin-attendance-status">Pending</span></td><td><button class="admin-action approve admin-approve">Send approval</button></td></tr>
+      </tbody></table></div></div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section data-admin-panel="attendance" class="admin-view" hidden>
+      <div class="admin-panel-heading admin-page-heading"><div><h2>Attendance approvals</h2><p>Review daily attendance requests from members and coaches.</p></div><select class="form-select admin-filter" data-admin-filter="adminAttendanceTable"><option value="all">All records</option><option value="pending">Pending</option><option value="approved">Approved</option></select></div>
+      <div class="admin-panel p-0"><div class="admin-table-wrap"><table class="table admin-table align-middle" id="adminAttendanceTable"><thead><tr><th>Name</th><th>Role</th><th>Date</th><th>Check-in</th><th>Status</th><th>Action</th></tr></thead><tbody>
+        <tr data-status="pending"><td>Arjun Reddy</td><td>Member</td><td>04 Nov 2026</td><td>06:42 AM</td><td><span class="status-pill status-pending admin-attendance-status">Pending</span></td><td><button class="admin-action approve admin-approve">Send approval</button></td></tr>
+        <tr data-status="approved"><td>Sarah Khan</td><td>Member</td><td>04 Nov 2026</td><td>07:10 AM</td><td><span class="status-pill status-approved admin-attendance-status">Approved</span></td><td><button class="admin-action" disabled>Approved</button></td></tr>
+        <tr data-status="pending"><td>Rahul Kumar</td><td>Coach</td><td>04 Nov 2026</td><td>05:55 AM</td><td><span class="status-pill status-pending admin-attendance-status">Pending</span></td><td><button class="admin-action approve admin-approve">Send approval</button></td></tr>
+        <tr data-status="pending"><td>Priya Sharma</td><td>Coach</td><td>04 Nov 2026</td><td>08:02 AM</td><td><span class="status-pill status-pending admin-attendance-status">Pending</span></td><td><button class="admin-action approve admin-approve">Send approval</button></td></tr>
+      </tbody></table></div></div>
+    </section>
+
+    <!-- REPORTS -->
+    <section data-admin-panel="reports" class="admin-view" hidden>
+      <div class="admin-panel-heading"><div><h2>Reports</h2><p>Sample operating and attendance overview.</p></div></div>
+      <div class="row g-3"><div class="col-lg-6"><article class="admin-panel"><h3>Monthly activity</h3><p>Illustrative gym activity figures.</p><div class="report-bars"><div><span>Jun</span><i style="height:45%"></i><b>45k</b></div><div><span>Jul</span><i style="height:60%"></i><b>60k</b></div><div><span>Aug</span><i style="height:52%"></i><b>52k</b></div><div><span>Sep</span><i style="height:75%"></i><b>75k</b></div><div><span>Oct</span><i style="height:90%"></i><b>90k</b></div><div><span>Nov</span><i style="height:68%"></i><b>68k</b></div></div></article></div><div class="col-lg-6"><article class="admin-panel"><h3>Attendance summary</h3><p>Sample attendance approval breakdown.</p><div class="report-summary"><div><strong>76%</strong><span>Attendance approved</span></div><div><strong>24%</strong><span>Pending review</span></div></div><div class="report-progress"><i style="width:76%"></i></div><div class="admin-muted mt-3">Use the Attendance section to review individual records.</div></article></div></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section data-admin-panel="settings" class="admin-view" hidden>
+      <div class="admin-panel-heading"><div><h2>Settings</h2><p>Update the display name and contact details for this demo dashboard.</p></div></div>
+      <div class="admin-panel settings-panel"><form id="adminSettingsForm"><div class="row g-3"><div class="col-md-6"><label class="form-label" for="adminDisplayName">Admin display name</label><input class="form-control" id="adminDisplayName" name="displayName" value="Administrator" required></div><div class="col-md-6"><label class="form-label" for="adminEmail">Contact email</label><input class="form-control" id="adminEmail" name="email" type="email" value="admin@ironpath.example" required></div><div class="col-md-6"><label class="form-label" for="adminBranch">Default branch</label><select class="form-select" id="adminBranch" name="branch"><option>All branches</option><option>Madhapur</option><option>Kukatpally</option><option>Gachibowli</option></select></div><div class="col-md-6"><label class="form-label" for="adminTimezone">Timezone</label><select class="form-select" id="adminTimezone" name="timezone"><option>Asia/Kolkata (IST)</option><option>UTC</option></select></div></div><button class="btn btn-green mt-4" type="submit">Save settings</button><span class="small-note ms-3" id="adminSettingsMessage" role="status"></span></form></div>
+    </section>
+    <footer class="admin-footer">© 2026 IronPath Gym · Admin dashboard preview <span>Train Harder · Live Healthier</span></footer>
+  </main>
+</div>
+{% endblock %}
