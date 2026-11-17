@@ -1,4 +1,6 @@
 import os, re, secrets, smtplib
+from dotenv import load_dotenv
+load_dotenv()
 from email.message import EmailMessage
 from datetime import datetime, timedelta, date
 from decimal import Decimal
@@ -10,7 +12,8 @@ import formula
 
 app = Flask(__name__)
 app.config.update(
-    SECRET_KEY=os.environ.get('SECRET_KEY', 'CHANGE-ME-USE-A-RANDOM-SECRET-KEY'),
+    SECRET_KEY=os.environ.get('SECRET_KEY') or secrets.token_hex(32),
+    SESSION_COOKIE_SECURE=os.environ.get('COOKIE_SECURE', '0') == '1',
     SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'mysql+pymysql://root:@localhost/gym'),
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE='Lax'
@@ -191,7 +194,7 @@ def signup():
         elif Account.query.filter_by(email=email).first(): flash('An account with this email already exists.','error')
         else:
             otp=f'{secrets.randbelow(10000):04d}'
-            session['signup_pending']={'name':name,'email':email,'phone':phone,'age':int(age),'password_hash':generate_password_hash(password),'otp_hash':generate_password_hash(otp),'expires':(datetime.utcnow()+timedelta(minutes=5)).isoformat(),'attempts':0}
+            session['signup_pending']={'name':name,'email':email,'phone':phone,'age':int(age),'password_hash':generate_password_hash(password),'otp_hash':generate_password_hash(otp),'expires':(datetime.now()+timedelta(minutes=5)).isoformat(),'attempts':0}
             try: send_otp(email,otp)
             except Exception as e:
                 session.pop('signup_pending',None); app.logger.exception('OTP send failed'); flash(f'Could not send verification email: {e}','error')
@@ -216,7 +219,7 @@ def forgot_password():
     if request.method=='POST':
         email=request.form.get('email','').strip().lower(); user=Account.query.filter_by(email=email,is_verified=True).first()
         if user:
-            otp=f'{secrets.randbelow(10000):04d}'; session['reset_pending']={'uid':user.id,'hash':generate_password_hash(otp),'expires':(datetime.utcnow()+timedelta(minutes=5)).isoformat(),'attempts':0}
+            otp=f'{secrets.randbelow(10000):04d}'; session['reset_pending']={'uid':user.id,'hash':generate_password_hash(otp),'expires':(datetime.now()+timedelta(minutes=5)).isoformat(),'attempts':0}
             try: send_otp(email,otp)
             except Exception: app.logger.exception('Reset OTP failed')
         flash('If the verified account exists, a reset code has been sent.','success'); return redirect('/reset-password')
@@ -247,13 +250,13 @@ def attendance_api():
         data=request.get_json(silent=True) or request.form
         try: target=max(1,min(7,int(data.get('target',3))))
         except: return jsonify(error='Invalid weekly target.'),400
-        day=datetime.utcnow().strftime('%A').lower(); today=date.today()
+        day=datetime.now().strftime('%A').lower(); today=date.today()
         exists=Attendance.query.filter(Attendance.user_id==user.id,db.func.date(Attendance.date)==today).first()
         if exists: return jsonify(error='You already submitted an attendance request today.'),409
-        row=Attendance(user_id=user.id,target=target,day=day,percentage=0,date=datetime.utcnow(),approved=0,admin_id=None)
+        row=Attendance(user_id=user.id,target=target,day=day,percentage=0,date=datetime.now(),approved=0,admin_id=None)
         db.session.add(row); db.session.commit(); return jsonify(message='Attendance request sent to admin.',request_id=row.sno),201
     rows=Attendance.query.filter_by(user_id=user.id).order_by(Attendance.date.desc()).limit(60).all()
-    approved=Attendance.query.filter_by(user_id=user.id,approved=1).filter(Attendance.date>=datetime.utcnow()-timedelta(days=7)).count()
+    approved=Attendance.query.filter_by(user_id=user.id,approved=1).filter(Attendance.date>=datetime.now()-timedelta(days=7)).count()
     target=rows[0].target if rows else 3
     return jsonify(target=target,approved_this_week=approved,percentage=min(100,round(approved/max(target,1)*100)),requests=[{'id':r.sno,'date':r.date.isoformat(),'day':r.day,'status':{0:'Pending',1:'Approved',2:'Rejected'}.get(r.approved,'Pending')} for r in rows])
 @app.route('/admin')
@@ -312,7 +315,16 @@ def cardio_data():
 @app.route('/contact',methods=['GET','POST'])
 def contact():
     if request.method=='POST':
-        db.session.add(Contact(name=request.form.get('name','').strip(),email=request.form.get('email','').strip(),msg=request.form.get('message','').strip())); db.session.commit(); flash('Message sent.','success')
+        name=request.form.get('name','').strip()
+        email=request.form.get('email','').strip().lower()
+        message=request.form.get('message','').strip()
+        if not name or len(name)>80 or not re.fullmatch(r'[^@\s]+@[^@\s]+\.[^@\s]+', email) or len(email)>100 or not message or len(message)>5000:
+            flash('Please provide a valid name, email address and message (up to 5000 characters).','error')
+        else:
+            db.session.add(Contact(name=name,email=email,msg=message))
+            db.session.commit()
+            flash('Message sent.','success')
     return render_template('contact.html')
 
-if __name__=='__main__': app.run(debug=True)
+if __name__=='__main__':
+    app.run(debug=os.environ.get('FLASK_DEBUG','0')=='1')
